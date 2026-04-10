@@ -51,6 +51,7 @@ public class AdvertisementEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "advertisement")
     private List<CommentEntity> comments;
 
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "advertisement_category",
             joinColumns = @JoinColumn(name = "advertisement_id"),

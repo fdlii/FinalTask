@@ -7,7 +7,6 @@ import lombok.*;
 @Table(name = "category")
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CategoryEntity {
