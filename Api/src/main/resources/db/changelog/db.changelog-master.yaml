@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       - file: db/changelog/V0-DatabaseInitializing.sql
+  - include:
+      - file: db/changelog/V1-AddingRoles.sql

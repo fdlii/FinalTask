@@ -9,7 +9,6 @@ import java.util.List;
 @Table(name = "account")
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 public class UserEntity {

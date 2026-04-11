@@ -1,4 +1,4 @@
-package advertisement.models;
+package advertisement.DTOs.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,17 +9,15 @@ import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class User {
+@Data
+public class UserRequestDTO {
     private String login;
     private String password;
     private String username;
     private String country;
     private String region;
     private String town;
-    private double sellerRating;
-    private String avatarLink;
     private Set<String> roles;
     private String secretAdminKey;
 }
