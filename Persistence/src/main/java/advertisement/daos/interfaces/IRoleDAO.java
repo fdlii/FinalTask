@@ -1,4 +1,6 @@
 package advertisement.daos.interfaces;
 
-public interface IRoleDAO {
+import advertisement.entities.RoleEntity;
+
+public interface IRoleDAO extends IGenericDAO<RoleEntity, Long> {
 }

@@ -5,9 +5,7 @@ import advertisement.daos.implementations.UserDAO;
 import advertisement.entities.RoleEntity;
 import advertisement.entities.UserEntity;
 import advertisement.files.interfaces.IFileManager;
-import advertisement.mappers.IRoleModelToEntityMapper;
 import advertisement.mappers.IUserModelToEntityMapper;
-import advertisement.models.Role;
 import advertisement.models.User;
 import advertisement.services.interfaces.IUserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -23,8 +21,6 @@ import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
-    @Autowired
-    IRoleModelToEntityMapper roleMapper;
     @Autowired
     IUserModelToEntityMapper userMapper;
     @Autowired
