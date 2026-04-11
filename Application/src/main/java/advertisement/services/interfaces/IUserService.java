@@ -7,4 +7,6 @@ import java.io.IOException;
 
 public interface IUserService {
     User registerUser(User user, MultipartFile multipartFile) throws IOException;
+    User changePassword(User user);
+    User editProfile(User user, MultipartFile avatar) throws IOException;
 }

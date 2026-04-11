@@ -3,6 +3,7 @@ package advertisement.services.implementations;
 import advertisement.daos.implementations.RoleDAO;
 import advertisement.daos.implementations.UserDAO;
 import advertisement.entities.RoleEntity;
+import advertisement.entities.UserEntity;
 import advertisement.files.interfaces.IFileManager;
 import advertisement.mappers.IRoleModelToEntityMapper;
 import advertisement.mappers.IUserModelToEntityMapper;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
@@ -56,6 +58,36 @@ public class UserService implements IUserService {
             user.setAvatarLink(avatarUrl);
         }
         userDAO.save(userMapper.toEntity(user), addedRoles);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public User changePassword(User user) {
+        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
+        UserEntity userEntity = optionalUserEntity.orElseThrow();
+        userEntity.setPassword(user.getPassword());
+        userDAO.update(userEntity);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public User editProfile(User user, MultipartFile avatar) throws IOException {
+        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
+        UserEntity userEntity = optionalUserEntity.orElseThrow();
+
+        fileManager.deleteOldAvatar(userEntity.getAvatarLink());
+        String newAvatarLink = fileManager.saveAvatar(avatar);
+
+        userEntity.setUsername(user.getUsername());
+        userEntity.setCountry(user.getCountry());
+        userEntity.setRegion(user.getRegion());
+        userEntity.setTown(user.getTown());
+        userEntity.setAvatarLink(newAvatarLink);
+        userDAO.update(userEntity);
+
+        user.setAvatarLink(newAvatarLink);
         return user;
     }
 }
