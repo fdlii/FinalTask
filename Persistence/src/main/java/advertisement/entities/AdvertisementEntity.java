@@ -58,4 +58,8 @@ public class AdvertisementEntity {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private List<CategoryEntity> categories;
+
+    public void addCategory(CategoryEntity categoryEntity) {
+        categories.add(categoryEntity);
+    }
 }

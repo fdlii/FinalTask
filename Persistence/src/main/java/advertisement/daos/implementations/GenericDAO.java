@@ -1,6 +1,7 @@
 package advertisement.daos.implementations;
 
 import advertisement.daos.interfaces.IGenericDAO;
+import advertisement.entities.AdvertisementEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public abstract class GenericDAO<T, ID> implements IGenericDAO<T, ID> {
+public abstract class GenericDAO<T> implements IGenericDAO<T> {
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -28,6 +29,18 @@ public abstract class GenericDAO<T, ID> implements IGenericDAO<T, ID> {
     @Override
     public T save(T entity) {
         entityManager.persist(entity);
+        return entity;
+    }
+
+    @Override
+    public T delete(T entity) {
+        entityManager.remove(entity);
+        return entity;
+    }
+
+    @Override
+    public T update(T entity) {
+        entityManager.merge(entity);
         return entity;
     }
 }

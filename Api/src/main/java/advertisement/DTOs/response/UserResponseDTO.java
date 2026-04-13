@@ -13,12 +13,10 @@ import java.util.Set;
 @Data
 public class UserResponseDTO {
     private String login;
-    private String password;
     private String username;
     private String country;
     private String region;
     private String town;
     private double sellerRating;
-    private Set<String> roles;
     private String avatarUrl;
 }

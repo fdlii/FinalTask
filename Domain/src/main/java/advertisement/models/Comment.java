@@ -5,10 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
-public class Category {
-    private String name;
+public class Comment {
+    private Advertisement advertisement;
+    private User user;
+    private LocalDateTime sentAt;
+    private String content;
 }

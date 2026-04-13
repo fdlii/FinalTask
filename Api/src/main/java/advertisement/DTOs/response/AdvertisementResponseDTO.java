@@ -1,6 +1,9 @@
-package advertisement.models;
+package advertisement.DTOs.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Builder
-public class Advertisement {
+public class AdvertisementResponseDTO {
     private Long adNumber;
-    private User user;
+    private UserResponseDTO user;
     private String title;
     private String description;
     private String previewLink;
@@ -20,8 +23,7 @@ public class Advertisement {
     private String country;
     private String region;
     private String town;
-    private boolean isPaid;
     private boolean isClosed;
-    private List<Comment> comments;
-    private List<Category> categories;
+    private List<CommentResponseDTO> comments;
+    private List<CategoryResponseDTO> categories;
 }

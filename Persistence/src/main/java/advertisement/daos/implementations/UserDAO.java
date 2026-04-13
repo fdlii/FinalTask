@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserDAO extends GenericDAO<UserEntity, Long> implements IUserDAO {
+public class UserDAO extends GenericDAO<UserEntity> implements IUserDAO {
     public UserDAO() {
         super(UserEntity.class);
     }
@@ -28,12 +28,6 @@ public class UserDAO extends GenericDAO<UserEntity, Long> implements IUserDAO {
         TypedQuery<UserEntity> query = entityManager.createQuery(jpql, UserEntity.class);
         query.setParameter("login", login);
 
-        Optional<UserEntity> optional = Optional.ofNullable(query.getSingleResult());
-        return optional;
-    }
-
-    @Override
-    public void update(UserEntity userEntity) {
-        entityManager.merge(userEntity);
+        return query.getResultList().stream().findFirst();
     }
 }

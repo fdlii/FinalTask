@@ -33,13 +33,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/change_password")
+    @PutMapping("/change_password")
     public ResponseEntity<UserResponseDTO> changePassword(@RequestBody UserRequestDTO userRequestDTO) {
         UserResponseDTO response = userMapper.toDTO(userService.changePassword(userMapper.toUser(userRequestDTO)));
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/edit_profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/edit_profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDTO> editProfile(
             @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar

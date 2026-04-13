@@ -1,4 +1,4 @@
-package advertisement.models;
+package advertisement.DTOs.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
-public class Category {
+public class CategoryResponseDTO {
     private String name;
 }
