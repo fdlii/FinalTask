@@ -5,7 +5,7 @@ import advertisement.entities.RoleEntity;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RoleDAO extends GenericDAO<RoleEntity, Long> implements IRoleDAO {
+public class RoleDAO extends GenericDAO<RoleEntity> implements IRoleDAO {
     public RoleDAO() {
         super(RoleEntity.class);
     }

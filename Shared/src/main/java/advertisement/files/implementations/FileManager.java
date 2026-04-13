@@ -44,6 +44,20 @@ public class FileManager implements IFileManager {
     }
 
     @Override
+    public void deleteOldPreview(String oldPreviewPath) throws IOException {
+        if (oldPreviewPath == null || oldPreviewPath.isBlank()) {
+            return;
+        }
+
+        String filename = oldPreviewPath.substring(oldPreviewPath.lastIndexOf('/') + 1);
+        Path oldFilePath = previewDir.resolve(filename);
+
+        if (Files.exists(oldFilePath)) {
+            Files.delete(oldFilePath);
+        }
+    }
+
+    @Override
     public String savePreview(MultipartFile multipartFile) throws IOException {
         if (!Files.exists(previewDir)) {
             Files.createDirectories(previewDir);

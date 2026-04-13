@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @Builder
 public class AdvertisementRequestDTO {
+    private Long adNumber;
     private UserRequestDTO user;
     private String title;
     private String description;
