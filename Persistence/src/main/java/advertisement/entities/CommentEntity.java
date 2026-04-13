@@ -9,7 +9,6 @@ import java.time.Instant;
 @Table(name = "comment")
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 public class CommentEntity {
@@ -17,12 +16,10 @@ public class CommentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "advertisement_id")
     private AdvertisementEntity advertisement;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private UserEntity user;

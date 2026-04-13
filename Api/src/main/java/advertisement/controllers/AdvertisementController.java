@@ -3,6 +3,7 @@ package advertisement.controllers;
 import advertisement.DTOs.request.AdvertisementRequestDTO;
 import advertisement.DTOs.response.AdvertisementResponseDTO;
 import advertisement.mappers.IAdvertisementDTOToModelMapper;
+import advertisement.models.Advertisement;
 import advertisement.services.interfaces.IAdvertisementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,15 +18,25 @@ import java.util.List;
 @RequestMapping("/advertisement")
 public class AdvertisementController {
     @Autowired
-    IAdvertisementService advertisementService;
+    private IAdvertisementService advertisementService;
     @Autowired
-    IAdvertisementDTOToModelMapper advertisementDTOToModelMapper;
+    private IAdvertisementDTOToModelMapper advertisementDTOToModelMapper;
 
     @GetMapping
     public ResponseEntity<List<AdvertisementResponseDTO>> getAllAdvertisements() {
         List<AdvertisementResponseDTO> response = advertisementDTOToModelMapper
                 .toDTOList(advertisementService.
                         getAllAdvertisements()
+                );
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{user_login}")
+    public ResponseEntity<List<AdvertisementResponseDTO>> getSalesHistory (@PathVariable("user_login") String login) {
+        List<Advertisement> advertisements = advertisementService.getSalesHistory(login);
+        List<AdvertisementResponseDTO> response = advertisementDTOToModelMapper
+                .toDTOList(advertisementService.
+                        getSalesHistory(login)
                 );
         return ResponseEntity.ok(response);
     }

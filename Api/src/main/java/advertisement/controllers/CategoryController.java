@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/category")
 public class CategoryController {
     @Autowired
-    ICategoryService categoryService;
+    private ICategoryService categoryService;
     @Autowired
-    ICategoryDTOToModelMapper categoryDTOToModelMapper;
+    private ICategoryDTOToModelMapper categoryDTOToModelMapper;
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> addCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
         CategoryResponseDTO response = categoryDTOToModelMapper

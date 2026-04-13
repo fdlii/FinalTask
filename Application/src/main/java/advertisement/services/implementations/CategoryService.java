@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class CategoryService implements ICategoryService {
     @Autowired
-    ICategoryDAO categoryDAO;
+    private ICategoryDAO categoryDAO;
     @Autowired
-    ICategoryModelToEntityMapper categoryModelToEntityMapper;
+    private ICategoryModelToEntityMapper categoryModelToEntityMapper;
 
     @Override
     @Transactional

@@ -23,7 +23,7 @@ public class AdvertisementResponseDTO {
     private String country;
     private String region;
     private String town;
-    private boolean isClosed;
+    private boolean closed;
     private List<CommentResponseDTO> comments;
     private List<CategoryResponseDTO> categories;
 }

@@ -20,8 +20,8 @@ public class Advertisement {
     private String country;
     private String region;
     private String town;
-    private boolean isPaid;
-    private boolean isClosed;
+    private boolean paid;
+    private boolean closed;
     private List<Comment> comments;
     private List<Category> categories;
 }
