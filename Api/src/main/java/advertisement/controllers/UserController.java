@@ -1,8 +1,10 @@
 package advertisement.controllers;
 
 import advertisement.DTOs.request.UserRequestDTO;
+import advertisement.DTOs.response.AdvertisementResponseDTO;
 import advertisement.DTOs.response.UserResponseDTO;
 import advertisement.mappers.IUserDTOToModelMapper;
+import advertisement.services.interfaces.IAdvertisementService;
 import advertisement.services.interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,9 +18,9 @@ import java.io.IOException;
 @RequestMapping("/user")
 public class UserController {
     @Autowired
-    IUserService userService;
+    private IUserService userService;
     @Autowired
-    IUserDTOToModelMapper userMapper;
+    private IUserDTOToModelMapper userMapper;
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDTO> registerUser(

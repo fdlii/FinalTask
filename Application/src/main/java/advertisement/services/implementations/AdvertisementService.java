@@ -25,20 +25,31 @@ import java.util.stream.Collectors;
 @Service
 public class AdvertisementService implements IAdvertisementService {
     @Autowired
-    IFileManager fileManager;
+    private IFileManager fileManager;
     @Autowired
-    IAdvertisementDAO advertisementDAO;
+    private IAdvertisementDAO advertisementDAO;
     @Autowired
-    IAdvertisementModelToEntityMapper advertisementModelToEntityMapper;
+    private IAdvertisementModelToEntityMapper advertisementModelToEntityMapper;
     @Autowired
-    IUserDAO userDAO;
+    private IUserDAO userDAO;
     @Autowired
-    ICategoryDAO categoryDAO;
+    private ICategoryDAO categoryDAO;
 
     @Override
     @Transactional
     public List<Advertisement> getAllAdvertisements() {
         return advertisementModelToEntityMapper.toModelList(advertisementDAO.findAll());
+    }
+
+    @Override
+    @Transactional
+    public List<Advertisement> getSalesHistory(String login) {
+        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
+        UserEntity userEntity = optionalUserEntity.orElseThrow();
+
+        List<AdvertisementEntity> advertisementEntities = advertisementDAO.findAdvertisementsByUserId(userEntity.getId());
+        return advertisementModelToEntityMapper
+                .toModelList(advertisementEntities.stream().filter(AdvertisementEntity::isClosed).toList());
     }
 
     @Override

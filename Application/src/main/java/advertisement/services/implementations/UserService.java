@@ -22,13 +22,13 @@ import java.util.Optional;
 @Service
 public class UserService implements IUserService {
     @Autowired
-    IUserModelToEntityMapper userMapper;
+    private IUserModelToEntityMapper userMapper;
     @Autowired
-    RoleDAO roleDAO;
+    private RoleDAO roleDAO;
     @Autowired
-    UserDAO userDAO;
+    private UserDAO userDAO;
     @Autowired
-    IFileManager fileManager;
+    private IFileManager fileManager;
 
     @Override
     @Transactional

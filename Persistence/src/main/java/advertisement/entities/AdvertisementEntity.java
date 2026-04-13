@@ -10,7 +10,6 @@ import java.util.List;
 @Table(name = "advertisement")
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
 public class AdvertisementEntity {
@@ -18,7 +17,6 @@ public class AdvertisementEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NonNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private UserEntity user;
@@ -43,10 +41,10 @@ public class AdvertisementEntity {
     private String town;
 
     @Column(name = "is_paid", nullable = false)
-    private boolean isPaid;
+    private boolean paid;
 
     @Column(name = "is_closed", nullable = false)
-    private boolean isClosed;
+    private boolean closed;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "advertisement")
     private List<CommentEntity> comments;
