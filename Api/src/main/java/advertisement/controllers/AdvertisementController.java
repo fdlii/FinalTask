@@ -1,5 +1,6 @@
 package advertisement.controllers;
 
+import advertisement.AdvertisementFilter;
 import advertisement.DTOs.request.AdvertisementRequestDTO;
 import advertisement.DTOs.response.AdvertisementResponseDTO;
 import advertisement.mappers.IAdvertisementDTOToModelMapper;
@@ -23,10 +24,12 @@ public class AdvertisementController {
     private IAdvertisementDTOToModelMapper advertisementDTOToModelMapper;
 
     @GetMapping
-    public ResponseEntity<List<AdvertisementResponseDTO>> getAllAdvertisements() {
+    public ResponseEntity<List<AdvertisementResponseDTO>> getAdvertisements(
+            @ModelAttribute AdvertisementFilter filter
+    ) {
         List<AdvertisementResponseDTO> response = advertisementDTOToModelMapper
                 .toDTOList(advertisementService.
-                        getAllAdvertisements()
+                        getAdvertisements(filter)
                 );
         return ResponseEntity.ok(response);
     }

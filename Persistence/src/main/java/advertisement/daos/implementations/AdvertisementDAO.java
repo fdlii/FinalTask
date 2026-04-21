@@ -15,6 +15,32 @@ public class AdvertisementDAO extends GenericDAO<AdvertisementEntity> implements
     }
 
     @Override
+    public List<AdvertisementEntity> findWithFilter(String title, String town, List<Long> categoriesIds) {
+        String jpql;
+        if (categoriesIds.isEmpty()) {
+            jpql = "SELECT DISTINCT a FROM AdvertisementEntity a " +
+                    "LEFT JOIN a.categories c " +
+                    "WHERE (LOWER(a.title) LIKE LOWER(CONCAT(:title, '%')) OR :title IS NULL) " +
+                    "AND (LOWER(a.town) LIKE LOWER(CONCAT(:town, '%')) OR :town IS NULL) ";
+        }
+        else {
+            jpql = "SELECT DISTINCT a FROM AdvertisementEntity a " +
+                    "LEFT JOIN a.categories c " +
+                    "WHERE (LOWER(a.title) LIKE LOWER(CONCAT(:title, '%')) OR :title IS NULL) " +
+                    "AND (LOWER(a.town) LIKE LOWER(CONCAT(:town, '%')) OR :town IS NULL) " +
+                    "AND (c.id IN :categoryIds)";
+        }
+        TypedQuery<AdvertisementEntity> query = entityManager.createQuery(jpql, AdvertisementEntity.class);
+        query.setParameter("title", title);
+        query.setParameter("town", town);
+        if (!categoriesIds.isEmpty()) {
+            query.setParameter("categoryIds", categoriesIds);
+        }
+
+        return query.getResultList();
+    }
+
+    @Override
     public Optional<AdvertisementEntity> findByAdNumber(Long id) {
         String jpql = "SELECT a FROM AdvertisementEntity a WHERE a.id = :id";
         TypedQuery<AdvertisementEntity> query = entityManager.createQuery(jpql, AdvertisementEntity.class);

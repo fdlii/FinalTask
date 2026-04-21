@@ -21,7 +21,7 @@ public class AdvertisementEntity {
     @JoinColumn(name = "account_id")
     private UserEntity user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(64)")
     private String title;
 
     private String description;
@@ -38,6 +38,7 @@ public class AdvertisementEntity {
 
     private String region;
 
+    @Column(columnDefinition = "VARCHAR(128)")
     private String town;
 
     @Column(name = "is_paid", nullable = false)

@@ -1,5 +1,6 @@
 package advertisement.services.implementations;
 
+import advertisement.AdvertisementFilter;
 import advertisement.daos.interfaces.IAdvertisementDAO;
 import advertisement.daos.interfaces.ICategoryDAO;
 import advertisement.daos.interfaces.IUserDAO;
@@ -37,8 +38,34 @@ public class AdvertisementService implements IAdvertisementService {
 
     @Override
     @Transactional
-    public List<Advertisement> getAllAdvertisements() {
-        return advertisementModelToEntityMapper.toModelList(advertisementDAO.findAll());
+    public List<Advertisement> getAdvertisements(AdvertisementFilter filter) {
+        List<Long> categoriesIds = new ArrayList<>();
+
+        if (filter.getCategories() != null) {
+            List<CategoryEntity> categoryEntities = categoryDAO.findAll();
+            for (String name : filter.getCategories()) {
+                boolean flag = false;
+                for (CategoryEntity categoryEntity : categoryEntities) {
+                    if (name.equals(categoryEntity.getName())) {
+                        flag = true;
+                        categoriesIds.add(categoryEntity.getId());
+                        break;
+                    }
+                }
+                if (!flag) {
+                    throw new NoSuchElementException("Указанная категория не найдена.");
+                }
+            }
+        }
+
+        List<Advertisement> advertisements = advertisementModelToEntityMapper
+                .toModelList(advertisementDAO
+                        .findWithFilter(filter.getTitle(), filter.getTown(), categoriesIds));
+        advertisements.sort(Comparator
+                .comparing(Advertisement::isClosed)
+                .thenComparing(Advertisement::isPaid, Comparator.reverseOrder())
+                .thenComparing(advertisement -> advertisement.getUser().getSellerRating(), Comparator.reverseOrder()));
+        return advertisements;
     }
 
     @Override
