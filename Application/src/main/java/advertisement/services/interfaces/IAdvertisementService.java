@@ -1,5 +1,6 @@
 package advertisement.services.interfaces;
 
+import advertisement.AdvertisementFilter;
 import advertisement.models.Advertisement;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public interface IAdvertisementService {
     Advertisement addAdvertisement(Advertisement advertisement, MultipartFile multipartFile) throws IOException;
-    List<Advertisement> getAllAdvertisements();
+    List<Advertisement> getAdvertisements(AdvertisementFilter filter);
     List<Advertisement> getSalesHistory(String login);
     Advertisement deleteAdvertisement(Advertisement model) throws IOException;
     Advertisement prepayAdvertisement(Advertisement model);
