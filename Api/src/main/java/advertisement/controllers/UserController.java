@@ -26,7 +26,7 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> registerUser(
             @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
-    ) throws IOException {
+    ) throws IOException, IllegalAccessException {
         UserResponseDTO response = userMapper.toDTO(
                 userService.registerUser(
                         userMapper.toUser(userRequestDTO), avatar
