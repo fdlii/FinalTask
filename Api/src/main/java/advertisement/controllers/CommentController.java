@@ -4,6 +4,7 @@ import advertisement.DTOs.request.CommentRequestDTO;
 import advertisement.DTOs.response.CommentResponseDTO;
 import advertisement.mappers.ICommentDTOToModelMapper;
 import advertisement.services.interfaces.ICommentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class CommentController {
     private ICommentDTOToModelMapper commentDTOToModelMapper;
 
     @PostMapping
-    public ResponseEntity<CommentResponseDTO> leaveComment(@RequestBody CommentRequestDTO commentRequestDTO) {
+    public ResponseEntity<CommentResponseDTO> leaveComment(@Valid @RequestBody CommentRequestDTO commentRequestDTO) {
         CommentResponseDTO response = commentDTOToModelMapper
                 .toDTO(commentService
                     .addComment(commentDTOToModelMapper

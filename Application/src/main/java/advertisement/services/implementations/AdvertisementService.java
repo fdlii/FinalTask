@@ -7,8 +7,6 @@ import advertisement.daos.interfaces.IUserDAO;
 import advertisement.entities.AdvertisementEntity;
 import advertisement.entities.CategoryEntity;
 import advertisement.entities.UserEntity;
-import advertisement.exceptions.invalid.AdvertisementInvalidException;
-import advertisement.exceptions.invalid.FilterInvalidException;
 import advertisement.exceptions.notfound.AdvertisementNotFoundException;
 import advertisement.exceptions.notfound.CategoryNotFoundException;
 import advertisement.exceptions.notfound.UserNotFoundException;
@@ -47,10 +45,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Transactional
     public List<Advertisement> getAdvertisements(AdvertisementFilter filter) {
         logger.info("Получение объявлений.");
-        if (filter == null) {
-            logger.error("Фильтр не указан.");
-            throw new FilterInvalidException("Фильтр не указан.");
-        }
 
         List<Long> categoriesIds = new ArrayList<>();
 
@@ -105,14 +99,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Transactional
     public Advertisement addAdvertisement(Advertisement advertisement, MultipartFile multipartFile) throws IOException {
         logger.info("Добавление объявления.");
-        if (advertisement == null || advertisement.getUser() == null || advertisement.getTitle() == null) {
-            logger.error("Объявление не указано либо не все обязательные поля заполнены.");
-            throw new AdvertisementInvalidException("Объявление не указано либо не все обязательные поля заполнены.");
-        }
-        if (advertisement.getPrice() < 0) {
-            logger.error("Цена товара/услуги не может быть меньше 0.");
-            throw new AdvertisementInvalidException("Цена товара/услуги не может быть меньше 0.");
-        }
 
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(advertisement.getUser().getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
@@ -155,14 +141,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Transactional
     public Advertisement editAdvertisement(Advertisement model, MultipartFile multipartFile) throws IOException {
         logger.info("Редактирование объявления.");
-        if (model == null || model.getUser() == null || model.getTitle() == null) {
-            logger.error("Объявление не указано либо не все обязательные поля заполнены.");
-            throw new AdvertisementInvalidException("Объявление не указано либо не все обязательные поля заполнены.");
-        }
-        if (model.getPrice() < 0) {
-            logger.error("Цена товара/услуги не может быть меньше 0.");
-            throw new AdvertisementInvalidException("Цена товара/услуги не может быть меньше 0.");
-        }
 
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
@@ -222,14 +200,10 @@ public class AdvertisementService implements IAdvertisementService {
 
     @Override
     @Transactional
-    public Advertisement prepayAdvertisement(Advertisement model) {
+    public void prepayAdvertisement(Long adNumber) {
         logger.info("Проплата объявления.");
-        if (model == null) {
-            logger.error("Объявление не указано.");
-            throw new AdvertisementInvalidException("Объявление не указано.");
-        }
 
-        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
+        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");
             throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
@@ -238,19 +212,14 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementDAO.update(advertisementEntity);
 
         logger.info("Объявление успешно проплачено.");
-        return advertisementModelToEntityMapper.toModel(advertisementEntity);
     }
 
     @Override
     @Transactional
-    public Advertisement closeAdvertisement(Advertisement model) {
+    public void closeAdvertisement(Long adNumber, String login) {
         logger.info("Закрытие объявления.");
-        if (model == null || model.getUser() == null) {
-            logger.error("Объявление не указано либо не все обязательные поля заполнены.");
-            throw new AdvertisementInvalidException("Объявление не указано либо не все обязательные поля заполнены.");
-        }
 
-        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
+        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");
             throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
@@ -261,7 +230,7 @@ public class AdvertisementService implements IAdvertisementService {
 
         boolean isOwner = advertisements.stream()
                 .anyMatch(advertisement ->
-                        Objects.equals(advertisement.getUser().getLogin(), model.getUser().getLogin()));
+                        Objects.equals(advertisement.getUser().getLogin(), login));
 
         if (!isOwner) {
             logger.error("Редактировать объявление может только его владелец.");
@@ -272,19 +241,14 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementDAO.update(advertisementEntity);
 
         logger.info("Объяаление успешно закрыто.");
-        return advertisementModelToEntityMapper.toModel(advertisementEntity);
     }
 
     @Override
     @Transactional
-    public Advertisement deleteAdvertisement(Advertisement model) throws IOException {
+    public void deleteAdvertisement(Long adNumber) throws IOException {
         logger.info("Удаление объявления.");
-        if (model == null) {
-            logger.error("Объявление не указано.");
-            throw new AdvertisementInvalidException("Объявление не указано.");
-        }
 
-        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
+        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");
             throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
@@ -293,6 +257,5 @@ public class AdvertisementService implements IAdvertisementService {
         fileManager.deleteOldPreview(advertisementEntity.getPreviewLink());
 
         logger.info("Объявление успешно удалено.");
-        return advertisementModelToEntityMapper.toModel(advertisementEntity);
     }
 }

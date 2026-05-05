@@ -52,10 +52,6 @@ public class MessageService implements IMessageService {
     @Transactional
     public Message sendMessage(Message model) {
         logger.info("Отправка сообщения.");
-        if (model == null || model.getSender() == null || model.getReciever() == null || model.getContent() == null || model.getContent().isEmpty()) {
-            logger.error("Сообщение не указано либо не все обязательные параметры заданы.");
-            throw new MessageInvalidException("Сообщение не указано либо не все обязательные параметры заданы.");
-        }
 
         Optional<UserEntity> optionalSender = userDAO.findByLogin(model.getSender().getLogin());
         UserEntity sender = optionalSender.orElseThrow(() -> {

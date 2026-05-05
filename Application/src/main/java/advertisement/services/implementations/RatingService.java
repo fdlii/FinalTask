@@ -47,14 +47,6 @@ public class RatingService implements IRatingService {
     @Transactional
     public Rating addRating(Rating rating) {
         logger.info("Добавление отзыва.");
-        if (rating == null || rating.getSeller() == null || rating.getReviewer() == null) {
-            logger.error("Рейтинг не указан либо не все обязательные поля заполнены.");
-            throw new RatingInvalidException("Рейтинг не указан либо не все обязательные поля заполнены.");
-        }
-        if (rating.getScore() < 1 || rating.getScore() > 5) {
-            logger.error("Оценка должна быть от 1 до 5.");
-            throw new RatingInvalidException("Оценка должна быть от 1 до 5.");
-        }
 
         Optional<UserEntity> optionalSeller = userDAO.findByLogin(rating.getSeller().getLogin());
         UserEntity seller = optionalSeller.orElseThrow(() -> {

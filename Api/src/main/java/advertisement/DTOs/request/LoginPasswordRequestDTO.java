@@ -2,20 +2,17 @@ package advertisement.DTOs.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Data
-public class UserRequestDTO {
+public class LoginPasswordRequestDTO {
     @NotBlank(message = "Логин не может быть пустым.")
     @Email(message = "Некорректный формат логина.")
     private String login;
@@ -23,16 +20,4 @@ public class UserRequestDTO {
     @NotBlank(message = "Пароль не может быть пустым.")
     @Size(min = 8, message = "Пароль не может содержать меньше 8 символов.")
     private String password;
-
-    @NotBlank(message = "Имя пользователя не может быть пустым.")
-    private String username;
-
-    private String country;
-    private String region;
-    private String town;
-
-    @NotEmpty(message = "Пользователь должен иметь хотя бы одну роль.")
-    private Set<String> roles;
-
-    private String secretAdminKey;
 }

@@ -7,7 +7,6 @@ import advertisement.entities.AdvertisementEntity;
 import advertisement.entities.CommentEntity;
 import advertisement.entities.UserEntity;
 import advertisement.exceptions.notfound.AdvertisementNotFoundException;
-import advertisement.exceptions.invalid.CommentInvalidException;
 import advertisement.exceptions.notfound.UserNotFoundException;
 import advertisement.mappers.ICommentModelToEntityMapper;
 import advertisement.models.Comment;
@@ -38,10 +37,6 @@ public class CommentService implements ICommentService {
     @Transactional
     public Comment addComment(Comment comment) {
         logger.info("Добавление комментария.");
-        if (comment == null || comment.getUser() == null || comment.getAdvertisement() == null || comment.getContent() == null || comment.getContent().isEmpty()) {
-            logger.error("Комментарий не указан либо не все обязательные параметры заданы.");
-            throw new CommentInvalidException("Комментарий не указан либо не все обязательные параметры заданы.");
-        }
 
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO
                 .findByAdNumber(comment.getAdvertisement().getAdNumber());

@@ -4,6 +4,7 @@ import advertisement.DTOs.request.CategoryRequestDTO;
 import advertisement.DTOs.response.CategoryResponseDTO;
 import advertisement.mappers.ICategoryDTOToModelMapper;
 import advertisement.services.interfaces.ICategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +20,7 @@ public class CategoryController {
     @Autowired
     private ICategoryDTOToModelMapper categoryDTOToModelMapper;
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> addCategory(@RequestBody CategoryRequestDTO categoryRequestDTO) {
+    public ResponseEntity<CategoryResponseDTO> addCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO) {
         CategoryResponseDTO response = categoryDTOToModelMapper
                 .toDTO(categoryService
                         .addCategory(categoryDTOToModelMapper

@@ -7,7 +7,6 @@ import advertisement.entities.RoleEntity;
 import advertisement.entities.UserEntity;
 import advertisement.exceptions.notfound.RoleNotFoundException;
 import advertisement.exceptions.other.UserAlreadyExistException;
-import advertisement.exceptions.invalid.UserInvalidException;
 import advertisement.exceptions.notfound.UserNotFoundException;
 import advertisement.files.interfaces.IFileManager;
 import advertisement.mappers.IUserModelToEntityMapper;
@@ -43,10 +42,6 @@ public class UserService implements IUserService {
     @Transactional
     public User registerUser(User user, MultipartFile multipartFile) throws IOException, IllegalAccessException {
         logger.info("Регистрация пользователя.");
-        if (user == null || user.getLogin() == null || user.getPassword() == null || user.getUsername() == null || user.getRoles() == null) {
-            logger.error("Пользователь не указан либо не все обязательные поля заполнены.");
-            throw new UserInvalidException("Пользователь не указан либо не все обязательные поля заполнены.");
-        }
 
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
         if (optionalUserEntity.isPresent()) {
@@ -87,33 +82,24 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public User changePassword(User user) {
+    public void changePassword(String login, String password) {
         logger.info("Смена пароля пользователя.");
-        if (user == null || user.getPassword() == null) {
-            logger.error("Пользователь не указан.");
-            throw new UserInvalidException("Пользователь не указан.");
-        }
 
-        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
+        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
             logger.error("Пользователя с таким логином не существует.");
             throw new UserNotFoundException("Пользователя с таким логином не существует.");
         });
-        userEntity.setPassword(user.getPassword());
+        userEntity.setPassword(password);
         userDAO.update(userEntity);
 
         logger.info("Пароль успешно изменён.");
-        return user;
     }
 
     @Override
     @Transactional
     public User editProfile(User user, MultipartFile avatar) throws IOException {
         logger.info("Редактирование профиля.");
-        if (user == null || user.getLogin() == null || user.getPassword() == null || user.getUsername() == null || user.getRoles() == null) {
-            logger.error("Пользователь не указан либо не все обязательные поля заполнены.");
-            throw new UserInvalidException("Пользователь не указан либо не все обязательные поля заполнены.");
-        }
 
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {

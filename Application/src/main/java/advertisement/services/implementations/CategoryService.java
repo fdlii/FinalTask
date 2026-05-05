@@ -3,7 +3,6 @@ package advertisement.services.implementations;
 import advertisement.daos.interfaces.ICategoryDAO;
 import advertisement.entities.CategoryEntity;
 import advertisement.exceptions.other.CategoryAlreadyExistException;
-import advertisement.exceptions.invalid.CategoryInvalidException;
 import advertisement.mappers.ICategoryModelToEntityMapper;
 import advertisement.models.Category;
 import advertisement.services.interfaces.ICategoryService;
@@ -27,10 +26,6 @@ public class CategoryService implements ICategoryService {
     @Transactional
     public Category addCategory(Category category) {
         logger.info("Добавление категории.");
-        if (category == null || category.getName() == null) {
-            logger.error("Категория не указана либо не все обязательные поля заполнены.");
-            throw new CategoryInvalidException("Категория не указана либо не все обязательные поля заполнены.");
-        }
 
         Optional<CategoryEntity> optionalCategoryEntity = categoryDAO.findByName(category.getName());
         if (optionalCategoryEntity.isPresent()) {

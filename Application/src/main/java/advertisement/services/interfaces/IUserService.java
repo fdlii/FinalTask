@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public interface IUserService {
     User registerUser(User user, MultipartFile multipartFile) throws IOException, IllegalAccessException;
-    User changePassword(User user);
+    void changePassword(String login, String password);
     User editProfile(User user, MultipartFile avatar) throws IOException;
 }

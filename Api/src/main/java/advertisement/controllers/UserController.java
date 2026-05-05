@@ -1,11 +1,13 @@
 package advertisement.controllers;
 
+import advertisement.DTOs.request.LoginPasswordRequestDTO;
 import advertisement.DTOs.request.UserRequestDTO;
 import advertisement.DTOs.response.AdvertisementResponseDTO;
 import advertisement.DTOs.response.UserResponseDTO;
 import advertisement.mappers.IUserDTOToModelMapper;
 import advertisement.services.interfaces.IAdvertisementService;
 import advertisement.services.interfaces.IUserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,7 @@ public class UserController {
 
     @PostMapping(value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDTO> registerUser(
-            @RequestPart("data") UserRequestDTO userRequestDTO,
+            @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
     ) throws IOException, IllegalAccessException {
         UserResponseDTO response = userMapper.toDTO(
@@ -36,14 +38,14 @@ public class UserController {
     }
 
     @PutMapping("/change_password")
-    public ResponseEntity<UserResponseDTO> changePassword(@RequestBody UserRequestDTO userRequestDTO) {
-        UserResponseDTO response = userMapper.toDTO(userService.changePassword(userMapper.toUser(userRequestDTO)));
-        return ResponseEntity.ok(response);
+    public ResponseEntity<String> changePassword(@RequestBody LoginPasswordRequestDTO loginPasswordRequestDTO) {
+        userService.changePassword(loginPasswordRequestDTO.getLogin(), loginPasswordRequestDTO.getPassword());
+        return ResponseEntity.ok("Пароль успешно изменён.");
     }
 
     @PutMapping(value = "/edit_profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponseDTO> editProfile(
-            @RequestPart("data") UserRequestDTO userRequestDTO,
+            @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
     ) throws IOException {
         UserResponseDTO response = userMapper.toDTO(
