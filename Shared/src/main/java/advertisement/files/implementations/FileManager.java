@@ -76,11 +76,11 @@ public class FileManager implements IFileManager {
         }
 
         return switch (contentType.toLowerCase()) {
+            case "image/jpg"               -> ".jpg";
             case "image/png"               -> ".png";
             case "image/webp"              -> ".webp";
-            case "image/gif"               -> ".gif";
             case "image/svg+xml"           -> ".svg";
-            default                        -> ".jpg";
+            default                        -> throw new IllegalArgumentException("Неподдерживаемый формат изображения.");
         };
     }
 }

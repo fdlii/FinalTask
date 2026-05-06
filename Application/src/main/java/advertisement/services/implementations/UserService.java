@@ -1,15 +1,20 @@
 package advertisement.services.implementations;
 
+import advertisement.AdminConfig;
 import advertisement.daos.implementations.RoleDAO;
 import advertisement.daos.implementations.UserDAO;
 import advertisement.entities.RoleEntity;
 import advertisement.entities.UserEntity;
+import advertisement.exceptions.notfound.RoleNotFoundException;
+import advertisement.exceptions.other.UserAlreadyExistException;
+import advertisement.exceptions.notfound.UserNotFoundException;
 import advertisement.files.interfaces.IFileManager;
 import advertisement.mappers.IUserModelToEntityMapper;
 import advertisement.models.User;
 import advertisement.services.interfaces.IUserService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +26,9 @@ import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    @Autowired
+    AdminConfig adminConfig;
     @Autowired
     private IUserModelToEntityMapper userMapper;
     @Autowired
@@ -32,20 +40,31 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public User registerUser(User user, MultipartFile multipartFile) throws IOException {
+    public User registerUser(User user, MultipartFile multipartFile) throws IOException, IllegalAccessException {
+        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
+        if (optionalUserEntity.isPresent()) {
+            logger.error("Пользователь с таким логином уже существует.");
+            throw new UserAlreadyExistException("Пользователь с таким логином уже существует.");
+        }
+
         List<RoleEntity> roles = roleDAO.findAll();
         List<RoleEntity> addedRoles = new ArrayList<>();
         for (String userRole : user.getRoles()) {
             boolean flag = false;
             for (RoleEntity role : roles) {
                 if (userRole.equals(role.getName())) {
+                    if (userRole.equals("ROLE_ADMIN") && !user.getSecretAdminKey().equals(adminConfig.getApiKey())) {
+                        logger.error("Неверный пароль администратора.");
+                        throw new IllegalAccessException("Неверный пароль администратора.");
+                    }
                     addedRoles.add(role);
                     flag = true;
                     break;
                 }
             }
             if (!flag) {
-                throw new EntityNotFoundException("Неопознанная роль.");
+                logger.error("Неизвестное имя роли.");
+                throw new RoleNotFoundException("Неизвестное имя роли: " + userRole);
             }
         }
 
@@ -54,24 +73,33 @@ public class UserService implements IUserService {
             user.setAvatarLink(avatarUrl);
         }
         userDAO.save(userMapper.toEntity(user), addedRoles);
+
+        logger.info("Регистрация успешна.");
         return user;
     }
 
     @Override
     @Transactional
-    public User changePassword(User user) {
-        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
-        UserEntity userEntity = optionalUserEntity.orElseThrow();
-        userEntity.setPassword(user.getPassword());
+    public void changePassword(String login, String password) {
+        Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
+        UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
+            logger.error("Пользователя с таким логином не существует.");
+            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+        });
+        userEntity.setPassword(password);
         userDAO.update(userEntity);
-        return user;
+
+        logger.info("Пароль успешно изменён.");
     }
 
     @Override
     @Transactional
     public User editProfile(User user, MultipartFile avatar) throws IOException {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
-        UserEntity userEntity = optionalUserEntity.orElseThrow();
+        UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
+            logger.error("Пользователя с таким логином не существует.");
+            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+        });
 
         fileManager.deleteOldAvatar(userEntity.getAvatarLink());
         String newAvatarLink = fileManager.saveAvatar(avatar);
@@ -84,6 +112,8 @@ public class UserService implements IUserService {
         userDAO.update(userEntity);
 
         user.setAvatarLink(newAvatarLink);
+
+        logger.info("Профиль успешно отредактирован.");
         return user;
     }
 }

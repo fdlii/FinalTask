@@ -7,24 +7,29 @@ import advertisement.daos.interfaces.IUserDAO;
 import advertisement.entities.AdvertisementEntity;
 import advertisement.entities.CategoryEntity;
 import advertisement.entities.UserEntity;
+import advertisement.exceptions.notfound.AdvertisementNotFoundException;
+import advertisement.exceptions.notfound.CategoryNotFoundException;
+import advertisement.exceptions.notfound.UserNotFoundException;
+import advertisement.exceptions.other.AdvertisementIllegalEditException;
 import advertisement.files.interfaces.IFileManager;
 import advertisement.mappers.IAdvertisementModelToEntityMapper;
 import advertisement.models.Advertisement;
 import advertisement.models.Category;
 import advertisement.services.interfaces.IAdvertisementService;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AdvertisementService implements IAdvertisementService {
+    private static final Logger logger = LoggerFactory.getLogger(AdvertisementService.class);
     @Autowired
     private IFileManager fileManager;
     @Autowired
@@ -53,7 +58,8 @@ public class AdvertisementService implements IAdvertisementService {
                     }
                 }
                 if (!flag) {
-                    throw new NoSuchElementException("Указанная категория не найдена.");
+                    logger.error("Категория {} не найдена.", name);
+                    throw new CategoryNotFoundException("Категория " + name + " не найдена.");
                 }
             }
         }
@@ -65,6 +71,8 @@ public class AdvertisementService implements IAdvertisementService {
                 .comparing(Advertisement::isClosed)
                 .thenComparing(Advertisement::isPaid, Comparator.reverseOrder())
                 .thenComparing(advertisement -> advertisement.getUser().getSellerRating(), Comparator.reverseOrder()));
+
+        logger.info("Объявления успешно получены.");
         return advertisements;
     }
 
@@ -72,9 +80,14 @@ public class AdvertisementService implements IAdvertisementService {
     @Transactional
     public List<Advertisement> getSalesHistory(String login) {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
-        UserEntity userEntity = optionalUserEntity.orElseThrow();
+        UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
+            logger.error("Пользователя с таким логином не существует.");
+            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+        });
 
         List<AdvertisementEntity> advertisementEntities = advertisementDAO.findAdvertisementsByUserId(userEntity.getId());
+
+        logger.info("История успешно получена.");
         return advertisementModelToEntityMapper
                 .toModelList(advertisementEntities.stream().filter(AdvertisementEntity::isClosed).toList());
     }
@@ -83,7 +96,10 @@ public class AdvertisementService implements IAdvertisementService {
     @Transactional
     public Advertisement addAdvertisement(Advertisement advertisement, MultipartFile multipartFile) throws IOException {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(advertisement.getUser().getLogin());
-        UserEntity userEntity = optionalUserEntity.orElseThrow();
+        UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
+            logger.error("Пользователя с таким логином не существует.");
+            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+        });
 
         if (multipartFile != null) {
             String previewLink = fileManager.savePreview(multipartFile);
@@ -103,7 +119,8 @@ public class AdvertisementService implements IAdvertisementService {
                 }
             }
             if (!flag) {
-                throw new NoSuchElementException("Указанная категория не найдена.");
+                logger.error("Категория {} не найдена.", category.getName());
+                throw new CategoryNotFoundException("Категория " + category.getName() + " не найдена.");
             }
         }
 
@@ -111,14 +128,18 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementEntity.setPublished(instant);
         advertisementEntity.setUser(userEntity);
 
+        logger.info("Объявление успешно добавлено.");
         return advertisementModelToEntityMapper.toModel(advertisementDAO.save(advertisementEntity));
     }
 
     @Override
     @Transactional
-    public Advertisement editAdvertisement(Advertisement model, MultipartFile multipartFile) throws IOException, IllegalAccessException {
+    public Advertisement editAdvertisement(Advertisement model, MultipartFile multipartFile) throws IOException {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
-        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow();
+        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
+            logger.error("Объявления с таким артикулом не существует.");
+            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+        });
         advertisementEntity.setCategories(new ArrayList<>());
 
         List<Advertisement> advertisements = advertisementModelToEntityMapper
@@ -130,7 +151,8 @@ public class AdvertisementService implements IAdvertisementService {
                         Objects.equals(advertisement.getUser().getLogin(), model.getUser().getLogin()));
 
         if (!isOwner) {
-            throw new IllegalAccessException("Редактировать объявление может только его владелец.");
+            logger.error("Редактировать объявление может только его владелец.");
+            throw new AdvertisementIllegalEditException("Редактировать объявление может только его владелец.");
         }
 
         List<CategoryEntity> categoryEntities = categoryDAO.findAll();
@@ -145,7 +167,8 @@ public class AdvertisementService implements IAdvertisementService {
                 }
             }
             if (!flag) {
-                throw new NoSuchElementException("Указанная категория не найдена.");
+                logger.error("Категория {} не найдена.", category.getName());
+                throw new CategoryNotFoundException("Категория " + category.getName() + " не найдена.");
             }
         }
 
@@ -163,49 +186,63 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementEntity.setTown(model.getTown());
 
         advertisementDAO.update(advertisementEntity);
+
+        logger.info("Объявление успешно отредактировано.");
         return advertisementModelToEntityMapper.toModel(advertisementEntity);
     }
 
     @Override
     @Transactional
-    public Advertisement prepayAdvertisement(Advertisement model) {
-        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
-        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow();
+    public void prepayAdvertisement(Long adNumber) {
+        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
+        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
+            logger.error("Объявления с таким артикулом не существует.");
+            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+        });
         advertisementEntity.setPaid(true);
         advertisementDAO.update(advertisementEntity);
-        return advertisementModelToEntityMapper.toModel(advertisementEntity);
+
+        logger.info("Объявление успешно проплачено.");
     }
 
     @Override
     @Transactional
-    public Advertisement closeAdvertisement(Advertisement model) throws IllegalAccessException {
-        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
-        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow();
+    public void closeAdvertisement(Long adNumber, String login) {
+        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
+        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
+            logger.error("Объявления с таким артикулом не существует.");
+            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+        });
         List<Advertisement> advertisements = advertisementModelToEntityMapper
                 .toModelList(advertisementDAO
                         .findAdvertisementsByUserId(advertisementEntity.getUser().getId()));
 
         boolean isOwner = advertisements.stream()
                 .anyMatch(advertisement ->
-                        Objects.equals(advertisement.getUser().getLogin(), model.getUser().getLogin()));
+                        Objects.equals(advertisement.getUser().getLogin(), login));
 
         if (!isOwner) {
-            throw new IllegalAccessException("Закрыть объявление может только его владелец.");
+            logger.error("Редактировать объявление может только его владелец.");
+            throw new AdvertisementIllegalEditException("Редактировать объявление может только его владелец.");
         }
 
         advertisementEntity.setClosed(true);
         advertisementDAO.update(advertisementEntity);
-        return advertisementModelToEntityMapper.toModel(advertisementEntity);
+
+        logger.info("Объяаление успешно закрыто.");
     }
 
     @Override
     @Transactional
-    public Advertisement deleteAdvertisement(Advertisement model) throws IOException {
-        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
-        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow();
+    public void deleteAdvertisement(Long adNumber) throws IOException {
+        Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
+        AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
+            logger.error("Объявления с таким артикулом не существует.");
+            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+        });
         advertisementDAO.delete(advertisementEntity);
         fileManager.deleteOldPreview(advertisementEntity.getPreviewLink());
-        return advertisementModelToEntityMapper.toModel(advertisementEntity);
-    }
 
+        logger.info("Объявление успешно удалено.");
+    }
 }

@@ -11,8 +11,8 @@ public interface IAdvertisementService {
     Advertisement addAdvertisement(Advertisement advertisement, MultipartFile multipartFile) throws IOException;
     List<Advertisement> getAdvertisements(AdvertisementFilter filter);
     List<Advertisement> getSalesHistory(String login);
-    Advertisement deleteAdvertisement(Advertisement model) throws IOException;
-    Advertisement prepayAdvertisement(Advertisement model);
+    void deleteAdvertisement(Long adNumber) throws IOException;
+    void prepayAdvertisement(Long adNumber);
     Advertisement editAdvertisement(Advertisement model, MultipartFile multipartFile) throws IOException, IllegalAccessException;
-    Advertisement closeAdvertisement(Advertisement model) throws IllegalAccessException;
+    void closeAdvertisement(Long adNumber, String login) throws IllegalAccessException;
 }

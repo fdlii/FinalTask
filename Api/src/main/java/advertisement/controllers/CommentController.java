@@ -4,6 +4,9 @@ import advertisement.DTOs.request.CommentRequestDTO;
 import advertisement.DTOs.response.CommentResponseDTO;
 import advertisement.mappers.ICommentDTOToModelMapper;
 import advertisement.services.interfaces.ICommentService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +16,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
+    private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
     @Autowired
     private ICommentService commentService;
     @Autowired
     private ICommentDTOToModelMapper commentDTOToModelMapper;
 
     @PostMapping
-    public ResponseEntity<CommentResponseDTO> leaveComment(@RequestBody CommentRequestDTO commentRequestDTO) {
+    public ResponseEntity<CommentResponseDTO> leaveComment(@Valid @RequestBody CommentRequestDTO commentRequestDTO) {
+        logger.info("Добавление комментария.");
         CommentResponseDTO response = commentDTOToModelMapper
                 .toDTO(commentService
                     .addComment(commentDTOToModelMapper
@@ -29,6 +34,7 @@ public class CommentController {
 
     @GetMapping("/{adNumber}")
     public ResponseEntity<List<CommentResponseDTO>> getAdvertisementComments(@PathVariable("adNumber") Long adNumber) {
+        logger.info("Получение комментариев объявления.");
         List<CommentResponseDTO> response = commentDTOToModelMapper
                 .toDTOList(commentService
                         .getAdvertisementComments(adNumber));
