@@ -1,6 +1,7 @@
 package advertisement.services.implementations;
 
 import advertisement.AdminConfig;
+import advertisement.JwtHandler;
 import advertisement.daos.implementations.RoleDAO;
 import advertisement.daos.implementations.UserDAO;
 import advertisement.entities.RoleEntity;
@@ -11,11 +12,17 @@ import advertisement.exceptions.notfound.UserNotFoundException;
 import advertisement.files.interfaces.IFileManager;
 import advertisement.mappers.IUserModelToEntityMapper;
 import advertisement.models.User;
+import advertisement.security.UserPrincipal;
 import advertisement.services.interfaces.IUserService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +34,11 @@ import java.util.Optional;
 @Service
 public class UserService implements IUserService {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(8);
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    JwtHandler jwtHandler;
     @Autowired
     AdminConfig adminConfig;
     @Autowired
@@ -72,10 +84,35 @@ public class UserService implements IUserService {
             String avatarUrl = fileManager.saveAvatar(multipartFile);
             user.setAvatarLink(avatarUrl);
         }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         userDAO.save(userMapper.toEntity(user), addedRoles);
 
         logger.info("Регистрация успешна.");
         return user;
+    }
+
+    @Override
+    @Transactional
+    public String verifyUser(String login, String password) {
+        Authentication authentication = null;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(login, password)
+            );
+        } catch (AuthenticationException e) {
+            logger.error("Неверный пароль для входа.");
+            throw new AuthenticationException("Неверный пароль для входа.") {
+            };
+        }
+
+        if (authentication.isAuthenticated()) {
+            UserPrincipal userPrincipal = new UserPrincipal(userDAO.findByLogin(login).get());
+            logger.info("Пользователь успешно вошёл.");
+            return jwtHandler.generateToken(login, userPrincipal.getAuthorities());
+        }
+        return null;
     }
 
     @Override
@@ -86,7 +123,7 @@ public class UserService implements IUserService {
             logger.error("Пользователя с таким логином не существует.");
             throw new UserNotFoundException("Пользователя с таким логином не существует.");
         });
-        userEntity.setPassword(password);
+        userEntity.setPassword(passwordEncoder.encode(password));
         userDAO.update(userEntity);
 
         logger.info("Пароль успешно изменён.");

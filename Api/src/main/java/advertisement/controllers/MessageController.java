@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class MessageController {
     private IMessageDTOToModelMapper messageDTOToModelMapper;
 
     @GetMapping("/{sender}/{reciever}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<MessageResponseDTO>> getChatMessages(
             @NotBlank(message = "Логин не может быть пустым.")
             @Email(message = "Некорректный формат логина.")
@@ -42,6 +44,7 @@ public class MessageController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<MessageResponseDTO> sendMessage(@Valid @RequestBody MessageRequestDTO messageRequestDTO) {
         logger.info("Отправка сообщения.");
         MessageResponseDTO response = messageDTOToModelMapper

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -60,6 +61,7 @@ public class AdvertisementController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<AdvertisementResponseDTO> addAdvertisement(
             @Valid @RequestPart("data") AdvertisementRequestDTO advertisementRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile
@@ -75,6 +77,7 @@ public class AdvertisementController {
     }
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<AdvertisementResponseDTO> editAdvertisement(
             @Valid @RequestPart("data") AdvertisementRequestDTO advertisementRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile
@@ -90,6 +93,7 @@ public class AdvertisementController {
     }
 
     @PutMapping("/prepay/{adNumber}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> prepayAdvertisement(@PathVariable("adNumber") Long adNumber) {
         logger.info("Проплата объявления.");
         advertisementService.prepayAdvertisement(adNumber);
@@ -97,6 +101,7 @@ public class AdvertisementController {
     }
 
     @PutMapping("/close")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> closeAdvertisement(
             @Valid @RequestBody AdvertisementManageRequestDTO advertisementRequestDTO
     ) throws IllegalAccessException {
@@ -107,6 +112,7 @@ public class AdvertisementController {
     }
 
     @DeleteMapping("/{adNumber}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAdvertisement(@PathVariable("adNumber") Long adNumber) throws IOException {
         logger.info("Удаление объявления.");
         advertisementService.deleteAdvertisement(adNumber);

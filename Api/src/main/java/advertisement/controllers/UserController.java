@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +42,17 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<String> loginUser(
+            @Valid @RequestBody LoginPasswordRequestDTO requestDTO
+    ) {
+        logger.info("Аутентификация пользователя.");
+        String token = userService.verifyUser(requestDTO.getLogin(), requestDTO.getPassword());
+        return ResponseEntity.ok(token);
+    }
+
     @PutMapping("/change_password")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<String> changePassword(@RequestBody LoginPasswordRequestDTO loginPasswordRequestDTO) {
         logger.info("Смена пароля пользователя.");
         userService.changePassword(loginPasswordRequestDTO.getLogin(), loginPasswordRequestDTO.getPassword());
@@ -49,6 +60,7 @@ public class UserController {
     }
 
     @PutMapping(value = "/edit_profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<UserResponseDTO> editProfile(
             @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
