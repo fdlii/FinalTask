@@ -107,6 +107,13 @@ public class GlobalExceptionHandler {
         return ex.getMessage();
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleIllegalArgumentException(IllegalArgumentException ex) {
+        logger.error(ex.getMessage());
+        return ex.getMessage();
+    }
+
     private Map<String, Object> buildErrorResponse(HttpStatus status, Object details) {
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("status", status.value());
