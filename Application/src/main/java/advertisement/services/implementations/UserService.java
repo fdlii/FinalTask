@@ -102,6 +102,7 @@ public class UserService implements IUserService {
                     new UsernamePasswordAuthenticationToken(login, password)
             );
         } catch (AuthenticationException e) {
+            logger.error("Неверный пароль для входа.");
             throw new AuthenticationException("Неверный пароль для входа.") {
             };
         }

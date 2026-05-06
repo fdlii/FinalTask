@@ -41,6 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             login = jwtHandler.extractUsername(jwt);
         } catch (JwtException e) {
+            logger.error("Переданный токен неверен либо его срок действия истёк.");
             entryPoint.commence(request, response,
                     new AuthException("Переданный токен неверен либо его срок действия истёк."));
             return;
@@ -57,6 +58,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 );
                 SecurityContextHolder.getContext().setAuthentication(token);
             } else {
+                logger.error("Переданный токен неверен либо его срок действия истёк.");
                 entryPoint.commence(request, response,
                         new AuthException("Переданный токен неверен либо его срок действия истёк."));
                 return;
