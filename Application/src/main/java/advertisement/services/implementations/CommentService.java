@@ -23,7 +23,7 @@ import java.util.Optional;
 
 @Service
 public class CommentService implements ICommentService {
-    Logger logger = LoggerFactory.getLogger(CommentService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommentService.class);
     @Autowired
     private ICommentDAO commentDAO;
     @Autowired
@@ -36,8 +36,6 @@ public class CommentService implements ICommentService {
     @Override
     @Transactional
     public Comment addComment(Comment comment) {
-        logger.info("Добавление комментария.");
-
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO
                 .findByAdNumber(comment.getAdvertisement().getAdNumber());
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
@@ -65,7 +63,6 @@ public class CommentService implements ICommentService {
     @Override
     @Transactional
     public List<Comment> getAdvertisementComments(Long adNumber) {
-        logger.info("Получение комментариев объявления.");
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO
                 .findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {

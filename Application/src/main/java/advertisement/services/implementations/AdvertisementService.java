@@ -29,7 +29,7 @@ import java.util.*;
 
 @Service
 public class AdvertisementService implements IAdvertisementService {
-    Logger logger = LoggerFactory.getLogger(AdvertisementService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AdvertisementService.class);
     @Autowired
     private IFileManager fileManager;
     @Autowired
@@ -44,8 +44,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public List<Advertisement> getAdvertisements(AdvertisementFilter filter) {
-        logger.info("Получение объявлений.");
-
         List<Long> categoriesIds = new ArrayList<>();
 
         if (filter.getCategories() != null) {
@@ -81,7 +79,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public List<Advertisement> getSalesHistory(String login) {
-        logger.info("Получение истории продаж.");
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
             logger.error("Пользователя с таким логином не существует.");
@@ -98,8 +95,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public Advertisement addAdvertisement(Advertisement advertisement, MultipartFile multipartFile) throws IOException {
-        logger.info("Добавление объявления.");
-
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(advertisement.getUser().getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
             logger.error("Пользователя с таким логином не существует.");
@@ -140,8 +135,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public Advertisement editAdvertisement(Advertisement model, MultipartFile multipartFile) throws IOException {
-        logger.info("Редактирование объявления.");
-
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");
@@ -201,8 +194,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public void prepayAdvertisement(Long adNumber) {
-        logger.info("Проплата объявления.");
-
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");
@@ -217,8 +208,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public void closeAdvertisement(Long adNumber, String login) {
-        logger.info("Закрытие объявления.");
-
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");
@@ -246,8 +235,6 @@ public class AdvertisementService implements IAdvertisementService {
     @Override
     @Transactional
     public void deleteAdvertisement(Long adNumber) throws IOException {
-        logger.info("Удаление объявления.");
-
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
             logger.error("Объявления с таким артикулом не существует.");

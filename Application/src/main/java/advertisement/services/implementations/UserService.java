@@ -26,7 +26,7 @@ import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
-    Logger logger = LoggerFactory.getLogger(UserService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     AdminConfig adminConfig;
     @Autowired
@@ -41,8 +41,6 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public User registerUser(User user, MultipartFile multipartFile) throws IOException, IllegalAccessException {
-        logger.info("Регистрация пользователя.");
-
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
         if (optionalUserEntity.isPresent()) {
             logger.error("Пользователь с таким логином уже существует.");
@@ -83,8 +81,6 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void changePassword(String login, String password) {
-        logger.info("Смена пароля пользователя.");
-
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
             logger.error("Пользователя с таким логином не существует.");
@@ -99,8 +95,6 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public User editProfile(User user, MultipartFile avatar) throws IOException {
-        logger.info("Редактирование профиля.");
-
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
             logger.error("Пользователя с таким логином не существует.");

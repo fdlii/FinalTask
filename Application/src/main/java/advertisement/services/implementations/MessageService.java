@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Service
 public class MessageService implements IMessageService {
-    Logger logger = LoggerFactory.getLogger(MessageService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageService.class);
     @Autowired
     private IMessageDAO messageDAO;
     @Autowired
@@ -32,7 +32,6 @@ public class MessageService implements IMessageService {
     @Override
     @Transactional
     public List<Message> getChatMessages(String senderLogin, String recieverLogin) {
-        logger.info("Получение сообщений чата.");
         Optional<UserEntity> optionalSender = userDAO.findByLogin(senderLogin);
         UserEntity sender = optionalSender.orElseThrow(() -> {
             logger.error("Отправителя с таким логином не существует.");
@@ -51,8 +50,6 @@ public class MessageService implements IMessageService {
     @Override
     @Transactional
     public Message sendMessage(Message model) {
-        logger.info("Отправка сообщения.");
-
         Optional<UserEntity> optionalSender = userDAO.findByLogin(model.getSender().getLogin());
         UserEntity sender = optionalSender.orElseThrow(() -> {
             logger.error("Отправителя с таким логином не существует.");

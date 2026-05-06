@@ -21,7 +21,7 @@ import java.util.Optional;
 
 @Service
 public class RatingService implements IRatingService {
-    Logger logger = LoggerFactory.getLogger(RatingService.class);
+    private static final Logger logger = LoggerFactory.getLogger(RatingService.class);
     @Autowired
     private IRatingDAO ratingDAO;
     @Autowired
@@ -32,7 +32,6 @@ public class RatingService implements IRatingService {
     @Override
     @Transactional
     public List<Rating> getSellerRatings(String login) {
-        logger.info("Получение оценок продавца.");
         Optional<UserEntity> optionalSeller = userDAO.findByLogin(login);
         UserEntity seller = optionalSeller.orElseThrow(() -> {
             logger.error("Пользователя с таким логином не существует.");
@@ -46,8 +45,6 @@ public class RatingService implements IRatingService {
     @Override
     @Transactional
     public Rating addRating(Rating rating) {
-        logger.info("Добавление отзыва.");
-
         Optional<UserEntity> optionalSeller = userDAO.findByLogin(rating.getSeller().getLogin());
         UserEntity seller = optionalSeller.orElseThrow(() -> {
             logger.error("Продавца с таким логином не существует.");

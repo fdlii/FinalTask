@@ -8,6 +8,8 @@ import advertisement.mappers.IUserDTOToModelMapper;
 import advertisement.services.interfaces.IAdvertisementService;
 import advertisement.services.interfaces.IUserService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     @Autowired
     private IUserService userService;
     @Autowired
@@ -29,6 +32,7 @@ public class UserController {
             @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
     ) throws IOException, IllegalAccessException {
+        logger.info("Регистрация пользователя.");
         UserResponseDTO response = userMapper.toDTO(
                 userService.registerUser(
                         userMapper.toUser(userRequestDTO), avatar
@@ -39,6 +43,7 @@ public class UserController {
 
     @PutMapping("/change_password")
     public ResponseEntity<String> changePassword(@RequestBody LoginPasswordRequestDTO loginPasswordRequestDTO) {
+        logger.info("Смена пароля пользователя.");
         userService.changePassword(loginPasswordRequestDTO.getLogin(), loginPasswordRequestDTO.getPassword());
         return ResponseEntity.ok("Пароль успешно изменён.");
     }
@@ -48,6 +53,7 @@ public class UserController {
             @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
     ) throws IOException {
+        logger.info("Редактирование профиля.");
         UserResponseDTO response = userMapper.toDTO(
                 userService.editProfile(
                         userMapper.toUser(userRequestDTO), avatar

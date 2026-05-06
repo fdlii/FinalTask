@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 public class CategoryService implements ICategoryService {
-    Logger logger = LoggerFactory.getLogger(CategoryService.class);
+    private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
     @Autowired
     private ICategoryDAO categoryDAO;
     @Autowired
@@ -25,8 +25,6 @@ public class CategoryService implements ICategoryService {
     @Override
     @Transactional
     public Category addCategory(Category category) {
-        logger.info("Добавление категории.");
-
         Optional<CategoryEntity> optionalCategoryEntity = categoryDAO.findByName(category.getName());
         if (optionalCategoryEntity.isPresent()) {
             logger.error("Указанная категория уже существует.");
