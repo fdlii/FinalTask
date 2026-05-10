@@ -9,9 +9,12 @@ import advertisement.exceptions.notfound.UserNotFoundException;
 import advertisement.exceptions.other.AdvertisementIllegalEditException;
 import advertisement.exceptions.other.CategoryAlreadyExistException;
 import advertisement.exceptions.other.UserAlreadyExistException;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,6 +38,13 @@ public class GlobalExceptionHandler {
 
         logger.error("Запрос содержит невалидные данные: {}", fieldErrors);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, fieldErrors);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleConstraintViolation(ConstraintViolationException ex) {
+        logger.error(ex.getMessage());
+        return ex.getMessage();
     }
 
     @ExceptionHandler(MessageInvalidException.class)
