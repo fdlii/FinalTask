@@ -8,7 +8,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "advertisement")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -17,40 +18,41 @@ public class AdvertisementEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id")
     private UserEntity user;
 
-    @Column(nullable = false, columnDefinition = "VARCHAR(64)")
+    @Column(length = 128)
     private String title;
 
     private String description;
 
-    @Column(name = "preview_link")
+    @Column(name = "preview_link", length = 256)
     private String previewLink;
 
-    @Column(nullable = false)
     private Instant published;
 
     private double price;
 
+    @Column(length = 64)
     private String country;
 
+    @Column(length = 64)
     private String region;
 
-    @Column(columnDefinition = "VARCHAR(128)")
+    @Column(length = 64)
     private String town;
 
-    @Column(name = "is_paid", nullable = false)
+    @Column(name = "is_paid")
     private boolean paid;
 
-    @Column(name = "is_closed", nullable = false)
+    @Column(name = "is_closed")
     private boolean closed;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "advertisement")
     private List<CommentEntity> comments;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "advertisement_category",
             joinColumns = @JoinColumn(name = "advertisement_id"),

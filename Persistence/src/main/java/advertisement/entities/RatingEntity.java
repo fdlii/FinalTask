@@ -7,7 +7,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "rating")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,11 +25,11 @@ public class RatingEntity {
     @JoinColumn(name = "reviewer_id")
     private UserEntity reviewer;
 
-    @Column(nullable = false)
     private int score;
 
+    @Column(length = 500)
     private String comment;
 
-    @Column(name = "written_at", nullable = false)
+    @Column(name = "written_at")
     private Instant writtenAt;
 }

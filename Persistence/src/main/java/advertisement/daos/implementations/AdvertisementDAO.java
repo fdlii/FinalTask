@@ -19,13 +19,15 @@ public class AdvertisementDAO extends GenericDAO<AdvertisementEntity> implements
         String jpql;
         if (categoriesIds.isEmpty()) {
             jpql = "SELECT DISTINCT a FROM AdvertisementEntity a " +
-                    "LEFT JOIN a.categories c " +
+                    "LEFT JOIN FETCH a.user " +
+                    "LEFT JOIN FETCH a.categories c " +
                     "WHERE (LOWER(a.title) LIKE LOWER(CONCAT(:title, '%')) OR :title IS NULL) " +
                     "AND (LOWER(a.town) LIKE LOWER(CONCAT(:town, '%')) OR :town IS NULL) ";
         }
         else {
             jpql = "SELECT DISTINCT a FROM AdvertisementEntity a " +
-                    "LEFT JOIN a.categories c " +
+                    "LEFT JOIN FETCH a.user " +
+                    "LEFT JOIN FETCH a.categories c " +
                     "WHERE (LOWER(a.title) LIKE LOWER(CONCAT(:title, '%')) OR :title IS NULL) " +
                     "AND (LOWER(a.town) LIKE LOWER(CONCAT(:town, '%')) OR :town IS NULL) " +
                     "AND (c.id IN :categoryIds)";

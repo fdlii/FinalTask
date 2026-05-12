@@ -7,7 +7,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "account")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -16,25 +17,28 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false)
+    @Column(length = 64)
     private String login;
 
-    @Column(nullable = false)
+    @Column(length = 64)
     private String password;
 
-    @Column(nullable = false)
+    @Column(length = 128)
     private String username;
 
+    @Column(length = 64)
     private String country;
 
+    @Column(length = 64)
     private String region;
 
+    @Column(length = 64)
     private String town;
 
-    @Column(name = "avatar_link")
+    @Column(name = "avatar_link", length = 256)
     private String avatarLink;
 
-    @Column(name = "seller_rating", nullable = false)
+    @Column(name = "seller_rating")
     private double sellerRating;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "seller")

@@ -7,7 +7,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "message")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,9 +25,9 @@ public class MessageEntity {
     @JoinColumn(name = "reciever_id")
     private UserEntity reciever;
 
-    @Column(name = "sent_at", nullable = false)
+    @Column(name = "sent_at")
     private Instant sentAt;
 
-    @Column(nullable = false)
+    @Column(length = 1000)
     private String content;
 }
