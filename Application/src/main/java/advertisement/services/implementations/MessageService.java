@@ -34,13 +34,13 @@ public class MessageService implements IMessageService {
     public List<Message> getChatMessages(String senderLogin, String recieverLogin) {
         Optional<UserEntity> optionalSender = userDAO.findByLogin(senderLogin);
         UserEntity sender = optionalSender.orElseThrow(() -> {
-            logger.error("Отправителя с таким логином не существует.");
-            throw new UserNotFoundException("Отправителя с таким логином не существует.");
+            logger.error("Отправителя с логином {} не существует.", senderLogin);
+            throw new UserNotFoundException("Отправителя с логином " + senderLogin + " не существует.");
         });
         Optional<UserEntity> optionalReciever = userDAO.findByLogin(recieverLogin);
         UserEntity reciever = optionalReciever.orElseThrow(() -> {
-            logger.error("Получателя с таким логином не существует.");
-            throw new UserNotFoundException("Получателя с таким логином не существует.");
+            logger.error("Получателя с логином {} не существует.", recieverLogin);
+            throw new UserNotFoundException("Получателя с логином " + recieverLogin + " не существует.");
         });
 
         logger.info("Сообщения успешно получены.");
@@ -52,13 +52,13 @@ public class MessageService implements IMessageService {
     public Message sendMessage(Message model) {
         Optional<UserEntity> optionalSender = userDAO.findByLogin(model.getSender().getLogin());
         UserEntity sender = optionalSender.orElseThrow(() -> {
-            logger.error("Отправителя с таким логином не существует.");
-            throw new UserNotFoundException("Отправителя с таким логином не существует.");
+            logger.error("Отправителя с логином {} не существует.", model.getSender().getLogin());
+            throw new UserNotFoundException("Отправителя с логином " + model.getSender().getLogin() + " не существует.");
         });
         Optional<UserEntity> optionalReciever = userDAO.findByLogin(model.getReciever().getLogin());
         UserEntity reciever = optionalReciever.orElseThrow(() -> {
-            logger.error("Получателя с таким логином не существует.");
-            throw new UserNotFoundException("Получателя с таким логином не существует.");
+            logger.error("Получателя с логином {} не существует.", model.getReciever().getLogin());
+            throw new UserNotFoundException("Получателя с логином " + model.getReciever().getLogin() + " не существует.");
         });
         if (sender.getId() == reciever.getId()) {
             logger.error("Нельзя отправить сообщения самому себе!");

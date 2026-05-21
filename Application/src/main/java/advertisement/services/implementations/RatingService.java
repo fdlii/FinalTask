@@ -34,8 +34,8 @@ public class RatingService implements IRatingService {
     public List<Rating> getSellerRatings(String login) {
         Optional<UserEntity> optionalSeller = userDAO.findByLogin(login);
         UserEntity seller = optionalSeller.orElseThrow(() -> {
-            logger.error("Пользователя с таким логином не существует.");
-            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+            logger.error("Продавца с логином {} не существует.", login);
+            throw new UserNotFoundException("Продавца с логином " + login + " не существует.");
         });
 
         logger.info("Оценки успешно получены.");
@@ -47,13 +47,13 @@ public class RatingService implements IRatingService {
     public Rating addRating(Rating rating) {
         Optional<UserEntity> optionalSeller = userDAO.findByLogin(rating.getSeller().getLogin());
         UserEntity seller = optionalSeller.orElseThrow(() -> {
-            logger.error("Продавца с таким логином не существует.");
-            throw new UserNotFoundException("Продавца с таким логином не существует.");
+            logger.error("Продавца с логином {} не существует.", rating.getSeller().getLogin());
+            throw new UserNotFoundException("Продавца с логином " + rating.getSeller().getLogin() + " не существует.");
         });
         Optional<UserEntity> optionalReviewer = userDAO.findByLogin(rating.getReviewer().getLogin());
         UserEntity reviewer = optionalReviewer.orElseThrow(() -> {
-            logger.error("Клиента с таким логином не существует.");
-            throw new UserNotFoundException("Клиента с таким логином не существует.");
+            logger.error("Покупателя с логином {} не существует.", rating.getReviewer().getLogin());
+            throw new UserNotFoundException("Покупателя с логином " + rating.getReviewer().getLogin() + " не существует.");
         });
         if (seller.getId() == reviewer.getId()) {
             logger.error("Нельзя поставить оценку самому себе!");

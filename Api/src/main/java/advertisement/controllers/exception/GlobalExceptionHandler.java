@@ -42,86 +42,86 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleConstraintViolation(ConstraintViolationException ex) {
+    public Map<String, Object> handleConstraintViolation(ConstraintViolationException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(MessageInvalidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleMessageInvalidException(MessageInvalidException ex) {
+    public Map<String, Object> handleMessageInvalidException(MessageInvalidException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(RatingInvalidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleRatingInvalidException(RatingInvalidException ex) {
+    public Map<String, Object> handleRatingInvalidException(RatingInvalidException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(AdvertisementNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleAdvertisementNotFoundException(AdvertisementNotFoundException ex) {
+    public Map<String, Object> handleAdvertisementNotFoundException(AdvertisementNotFoundException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleCategoryNotFoundException(CategoryNotFoundException ex) {
+    public Map<String, Object> handleCategoryNotFoundException(CategoryNotFoundException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleRoleNotFoundException(RoleNotFoundException ex) {
+    public Map<String, Object> handleRoleNotFoundException(RoleNotFoundException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleUserNotFoundException(UserNotFoundException ex) {
+    public Map<String, Object> handleUserNotFoundException(UserNotFoundException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     @ExceptionHandler(AdvertisementIllegalEditException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String handleAdvertisementIllegalEditException(AdvertisementIllegalEditException ex) {
+    public Map<String, Object> handleAdvertisementIllegalEditException(AdvertisementIllegalEditException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(CategoryAlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleCategoryAlreadyExistException(CategoryAlreadyExistException ex) {
+    public Map<String, Object> handleCategoryAlreadyExistException(CategoryAlreadyExistException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(UserAlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public String handleUserAlreadyExistException(UserAlreadyExistException ex) {
+    public Map<String, Object> handleUserAlreadyExistException(UserAlreadyExistException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalAccessException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public String handleIllegalAccessException(IllegalAccessException ex) {
+    public Map<String, Object> handleIllegalAccessException(IllegalAccessException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleIllegalArgumentException(IllegalArgumentException ex) {
+    public Map<String, Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         logger.error(ex.getMessage());
-        return ex.getMessage();
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     private Map<String, Object> buildErrorResponse(HttpStatus status, Object details) {

@@ -81,8 +81,8 @@ public class AdvertisementService implements IAdvertisementService {
     public List<Advertisement> getSalesHistory(String login) {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
-            logger.error("Пользователя с таким логином не существует.");
-            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+            logger.error("Пользователя с логином {} не существует.", login);
+            throw new UserNotFoundException("Пользователя с логином " + login + " не существует.");
         });
 
         List<AdvertisementEntity> advertisementEntities = advertisementDAO.findAdvertisementsByUserId(userEntity.getId());
@@ -97,8 +97,8 @@ public class AdvertisementService implements IAdvertisementService {
     public Advertisement addAdvertisement(Advertisement advertisement, MultipartFile multipartFile) throws IOException {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(advertisement.getUser().getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
-            logger.error("Пользователя с таким логином не существует.");
-            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+            logger.error("Пользователя с логином {} не существует.", advertisement.getUser().getLogin());
+            throw new UserNotFoundException("Пользователя с логином " + advertisement.getUser().getLogin() + " не существует.");
         });
 
         if (multipartFile != null) {
@@ -137,8 +137,8 @@ public class AdvertisementService implements IAdvertisementService {
     public Advertisement editAdvertisement(Advertisement model, MultipartFile multipartFile) throws IOException {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(model.getAdNumber());
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
-            logger.error("Объявления с таким артикулом не существует.");
-            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+            logger.error("Объявления с артикулом {} не существует.", model.getAdNumber());
+            throw new AdvertisementNotFoundException("Объявления с артикулом " + model.getAdNumber() + " не существует.");
         });
         advertisementEntity.setCategories(new ArrayList<>());
 
@@ -196,8 +196,8 @@ public class AdvertisementService implements IAdvertisementService {
     public void prepayAdvertisement(Long adNumber) {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
-            logger.error("Объявления с таким артикулом не существует.");
-            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+            logger.error("Объявления с артикулом {} не существует.", adNumber);
+            throw new AdvertisementNotFoundException("Объявления с артикулом " + adNumber + " не существует.");
         });
         advertisementEntity.setPaid(true);
         advertisementDAO.update(advertisementEntity);
@@ -210,8 +210,8 @@ public class AdvertisementService implements IAdvertisementService {
     public void closeAdvertisement(Long adNumber, String login) {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
-            logger.error("Объявления с таким артикулом не существует.");
-            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+            logger.error("Объявления с артикулом {} не существует.", adNumber);
+            throw new AdvertisementNotFoundException("Объявления с артикулом " + adNumber + " не существует.");
         });
         List<Advertisement> advertisements = advertisementModelToEntityMapper
                 .toModelList(advertisementDAO
@@ -237,8 +237,8 @@ public class AdvertisementService implements IAdvertisementService {
     public void deleteAdvertisement(Long adNumber) throws IOException {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO.findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
-            logger.error("Объявления с таким артикулом не существует.");
-            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+            logger.error("Объявления с артикулом {} не существует.", adNumber);
+            throw new AdvertisementNotFoundException("Объявления с артикулом " + adNumber + " не существует.");
         });
         advertisementDAO.delete(advertisementEntity);
         fileManager.deleteOldPreview(advertisementEntity.getPreviewLink());

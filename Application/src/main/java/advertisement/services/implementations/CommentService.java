@@ -39,13 +39,13 @@ public class CommentService implements ICommentService {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO
                 .findByAdNumber(comment.getAdvertisement().getAdNumber());
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
-            logger.error("Объявления с таким артикулом не существует.");
-            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+            logger.error("Объявления с артикулом {} не существует.", comment.getAdvertisement().getAdNumber());
+            throw new AdvertisementNotFoundException("Объявления с артикулом " + comment.getAdvertisement().getAdNumber() + " не существует.");
         });
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(comment.getUser().getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
-            logger.error("Пользователя с таким логином не существует.");
-            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+            logger.error("Пользователя с логином {} не существует.", comment.getUser().getLogin());
+            throw new UserNotFoundException("Пользователя с логином " + comment.getUser().getLogin() + " не существует.");
         });
 
         CommentEntity commentEntity = commentModelToEntityMapper.toEntity(comment);
@@ -66,8 +66,8 @@ public class CommentService implements ICommentService {
         Optional<AdvertisementEntity> optionalAdvertisementEntity = advertisementDAO
                 .findByAdNumber(adNumber);
         AdvertisementEntity advertisementEntity = optionalAdvertisementEntity.orElseThrow(() -> {
-            logger.error("Объявления с таким артикулом не существует.");
-            throw new AdvertisementNotFoundException("Объявления с таким артикулом не существует.");
+            logger.error("Объявления с артикулом {} не существует.", adNumber);
+            throw new AdvertisementNotFoundException("Объявления с артикулом " + adNumber + " не существует.");
         });
 
         logger.info("Комментарии успешно получены.");

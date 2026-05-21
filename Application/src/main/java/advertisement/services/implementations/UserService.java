@@ -19,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -55,8 +57,8 @@ public class UserService implements IUserService {
     public User registerUser(User user, MultipartFile multipartFile) throws IOException, IllegalAccessException {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
         if (optionalUserEntity.isPresent()) {
-            logger.error("Пользователь с таким логином уже существует.");
-            throw new UserAlreadyExistException("Пользователь с таким логином уже существует.");
+            logger.error("Пользователь с логином {} уже существует.", user.getLogin());
+            throw new UserAlreadyExistException("Пользователь с логином " + user.getLogin() + " уже существует.");
         }
 
         List<RoleEntity> roles = roleDAO.findAll();
@@ -75,7 +77,7 @@ public class UserService implements IUserService {
                 }
             }
             if (!flag) {
-                logger.error("Неизвестное имя роли.");
+                logger.error("Неизвестное имя роли: {}", userRole);
                 throw new RoleNotFoundException("Неизвестное имя роли: " + userRole);
             }
         }
@@ -101,10 +103,12 @@ public class UserService implements IUserService {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login, password)
             );
-        } catch (AuthenticationException e) {
+        } catch (InternalAuthenticationServiceException e) {
+            logger.error(e.getMessage());
+            throw new AuthenticationException(e.getMessage()) {};
+        } catch (BadCredentialsException e) {
             logger.error("Неверный пароль для входа.");
-            throw new AuthenticationException("Неверный пароль для входа.") {
-            };
+            throw new AuthenticationException("Неверный пароль для входа.") {};
         }
 
         if (authentication.isAuthenticated()) {
@@ -120,8 +124,8 @@ public class UserService implements IUserService {
     public void changePassword(String login, String password) {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(login);
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
-            logger.error("Пользователя с таким логином не существует.");
-            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+            logger.error("Пользователя с логином {} не существует.", login);
+            throw new UserNotFoundException("Пользователя с логином " + login + " не существует.");
         });
         userEntity.setPassword(passwordEncoder.encode(password));
         userDAO.update(userEntity);
@@ -134,8 +138,8 @@ public class UserService implements IUserService {
     public User editProfile(User user, MultipartFile avatar) throws IOException {
         Optional<UserEntity> optionalUserEntity = userDAO.findByLogin(user.getLogin());
         UserEntity userEntity = optionalUserEntity.orElseThrow(() -> {
-            logger.error("Пользователя с таким логином не существует.");
-            throw new UserNotFoundException("Пользователя с таким логином не существует.");
+            logger.error("Пользователя с логином {} не существует.", user.getLogin());
+            throw new UserNotFoundException("Пользователя с логином " + user.getLogin() + " не существует.");
         });
 
         fileManager.deleteOldAvatar(userEntity.getAvatarLink());

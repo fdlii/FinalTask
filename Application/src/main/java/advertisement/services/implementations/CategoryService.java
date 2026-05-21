@@ -27,8 +27,8 @@ public class CategoryService implements ICategoryService {
     public Category addCategory(Category category) {
         Optional<CategoryEntity> optionalCategoryEntity = categoryDAO.findByName(category.getName());
         if (optionalCategoryEntity.isPresent()) {
-            logger.error("Указанная категория уже существует.");
-            throw new CategoryAlreadyExistException("Указанная категория уже существует.");
+            logger.error("Категория {} уже существует.", category.getName());
+            throw new CategoryAlreadyExistException("Категория " + category.getName() + " уже существует.");
         }
 
         logger.info("Категория успешно добавлена.");
