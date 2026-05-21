@@ -33,7 +33,7 @@ public class RatingController {
             @Email(message = "Некорректный формат логина.")
             @PathVariable("login") String login
     ) {
-        logger.info("Получение оценок продавца.");
+        logger.info("Получение оценок продавца {}.", login);
         List<RatingResponseDTO> response = ratingDTOToModelMapper
                 .toDTOList(ratingService
                         .getSellerRatings(login));
@@ -43,7 +43,7 @@ public class RatingController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<RatingResponseDTO> addRating(@Valid @RequestBody RatingRequestDTO ratingRequestDTO) {
-        logger.info("Добавление отзыва.");
+        logger.info("Добавление отзыва продавцу {} от пользователя {}.", ratingRequestDTO.getSellerLogin(), ratingRequestDTO.getReviewerLogin());
         RatingResponseDTO response = ratingDTOToModelMapper
                 .toDTO(ratingService
                         .addRating(ratingDTOToModelMapper

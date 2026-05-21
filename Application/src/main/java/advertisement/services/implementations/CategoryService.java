@@ -31,7 +31,7 @@ public class CategoryService implements ICategoryService {
             throw new CategoryAlreadyExistException("Категория " + category.getName() + " уже существует.");
         }
 
-        logger.info("Категория успешно добавлена.");
+        logger.info("Категория {} успешно добавлена.", category.getName());
         return categoryModelToEntityMapper.toModel(categoryDAO.save(categoryModelToEntityMapper.toEntity(category)));
     }
 }

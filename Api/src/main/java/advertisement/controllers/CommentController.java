@@ -26,7 +26,7 @@ public class CommentController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<CommentResponseDTO> leaveComment(@Valid @RequestBody CommentRequestDTO commentRequestDTO) {
-        logger.info("Добавление комментария.");
+        logger.info("Добавление комментария от пользователя {} под объявлением {}.", commentRequestDTO.getSenderLogin(), commentRequestDTO.getAdNumber());
         CommentResponseDTO response = commentDTOToModelMapper
                 .toDTO(commentService
                     .addComment(commentDTOToModelMapper
@@ -36,7 +36,7 @@ public class CommentController {
 
     @GetMapping("/{adNumber}")
     public ResponseEntity<List<CommentResponseDTO>> getAdvertisementComments(@PathVariable("adNumber") Long adNumber) {
-        logger.info("Получение комментариев объявления.");
+        logger.info("Получение комментариев объявления с номером {}.", adNumber);
         List<CommentResponseDTO> response = commentDTOToModelMapper
                 .toDTOList(commentService
                         .getAdvertisementComments(adNumber));

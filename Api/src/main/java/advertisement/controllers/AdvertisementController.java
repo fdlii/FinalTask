@@ -51,7 +51,7 @@ public class AdvertisementController {
             @Email(message = "Некорректный формат логина.")
             @PathVariable("user_login") String login
     ) {
-        logger.info("Получение истории продаж.");
+        logger.info("Получение истории продаж пользователя {}.", login);
         List<Advertisement> advertisements = advertisementService.getSalesHistory(login);
         List<AdvertisementResponseDTO> response = advertisementDTOToModelMapper
                 .toDTOList(advertisementService.
@@ -66,7 +66,7 @@ public class AdvertisementController {
             @Valid @RequestPart("data") AdvertisementRequestDTO advertisementRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile
     ) throws IOException {
-        logger.info("Добавление объявления.");
+        logger.info("Добавление объявления пользователем {}.", advertisementRequestDTO.getUser().getLogin());
         AdvertisementResponseDTO response = advertisementDTOToModelMapper.toDTO(
                 advertisementService.addAdvertisement(
                         advertisementDTOToModelMapper.toModel(advertisementRequestDTO),
@@ -82,7 +82,7 @@ public class AdvertisementController {
             @Valid @RequestPart("data") AdvertisementRequestDTO advertisementRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile
     ) throws IOException, IllegalAccessException {
-        logger.info("Редактирование объявления.");
+        logger.info("Редактирование объявления с номером {}.", advertisementRequestDTO.getAdNumber());
         AdvertisementResponseDTO response = advertisementDTOToModelMapper.toDTO(
                 advertisementService.editAdvertisement(
                         advertisementDTOToModelMapper.toModel(advertisementRequestDTO),
@@ -95,7 +95,7 @@ public class AdvertisementController {
     @PutMapping("/prepay/{adNumber}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> prepayAdvertisement(@PathVariable("adNumber") Long adNumber) {
-        logger.info("Проплата объявления.");
+        logger.info("Проплата объявления с номером {}.", adNumber);
         advertisementService.prepayAdvertisement(adNumber);
         return ResponseEntity.ok("Объявление успешно проплачено.");
     }
@@ -105,7 +105,7 @@ public class AdvertisementController {
     public ResponseEntity<String> closeAdvertisement(
             @Valid @RequestBody AdvertisementManageRequestDTO advertisementRequestDTO
     ) throws IllegalAccessException {
-        logger.info("Закрытие объявления.");
+        logger.info("Закрытие объявления с номером {}.", advertisementRequestDTO.getAdNumber());
         advertisementService.closeAdvertisement(advertisementRequestDTO.getAdNumber(),
                                                 advertisementRequestDTO.getUser().getLogin());
         return ResponseEntity.ok("Объявление успешно закрыто.");
@@ -114,7 +114,7 @@ public class AdvertisementController {
     @DeleteMapping("/{adNumber}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAdvertisement(@PathVariable("adNumber") Long adNumber) throws IOException {
-        logger.info("Удаление объявления.");
+        logger.info("Удаление объявления с номером {}.", adNumber);
         advertisementService.deleteAdvertisement(adNumber);
         return ResponseEntity.ok("Объявление успешно удалено.");
     }

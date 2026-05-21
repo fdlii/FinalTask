@@ -33,7 +33,7 @@ public class UserController {
             @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
     ) throws IOException, IllegalAccessException {
-        logger.info("Регистрация пользователя.");
+        logger.info("Регистрация пользователя {}.", userRequestDTO.getLogin());
         UserResponseDTO response = userMapper.toDTO(
                 userService.registerUser(
                         userMapper.toUser(userRequestDTO), avatar
@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<String> loginUser(
             @Valid @RequestBody LoginPasswordRequestDTO requestDTO
     ) {
-        logger.info("Аутентификация пользователя.");
+        logger.info("Аутентификация пользователя {}.", requestDTO.getLogin());
         String token = userService.verifyUser(requestDTO.getLogin(), requestDTO.getPassword());
         return ResponseEntity.ok(token);
     }
@@ -54,7 +54,7 @@ public class UserController {
     @PutMapping("/change_password")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<String> changePassword(@RequestBody LoginPasswordRequestDTO loginPasswordRequestDTO) {
-        logger.info("Смена пароля пользователя.");
+        logger.info("Смена пароля пользователя {}.", loginPasswordRequestDTO.getLogin());
         userService.changePassword(loginPasswordRequestDTO.getLogin(), loginPasswordRequestDTO.getPassword());
         return ResponseEntity.ok("Пароль успешно изменён.");
     }
@@ -65,7 +65,7 @@ public class UserController {
             @Valid @RequestPart("data") UserRequestDTO userRequestDTO,
             @RequestPart(value = "file", required = false) MultipartFile avatar
     ) throws IOException {
-        logger.info("Редактирование профиля.");
+        logger.info("Редактирование профиля пользователя {}.", userRequestDTO.getLogin());
         UserResponseDTO response = userMapper.toDTO(
                 userService.editProfile(
                         userMapper.toUser(userRequestDTO), avatar

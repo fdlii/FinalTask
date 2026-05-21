@@ -56,7 +56,7 @@ public class CommentService implements ICommentService {
         commentEntity.setSentAt(instant);
         commentDAO.save(commentEntity);
 
-        logger.info("Комментарий успешно добавлен.");
+        logger.info("Комментарий под объявление {} успешно добавлен.", comment.getAdvertisement().getAdNumber());
         return commentModelToEntityMapper.toModel(commentEntity);
     }
 
@@ -70,7 +70,7 @@ public class CommentService implements ICommentService {
             throw new AdvertisementNotFoundException("Объявления с артикулом " + adNumber + " не существует.");
         });
 
-        logger.info("Комментарии успешно получены.");
+        logger.info("Комментарии объявления {} успешно получены.", adNumber);
         return commentModelToEntityMapper.toModelList(advertisementEntity.getComments());
     }
 }

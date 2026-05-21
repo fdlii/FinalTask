@@ -43,7 +43,7 @@ public class MessageService implements IMessageService {
             throw new UserNotFoundException("Получателя с логином " + recieverLogin + " не существует.");
         });
 
-        logger.info("Сообщения успешно получены.");
+        logger.info("Сообщения пользователя {} успешно получены.", senderLogin);
         return messageModelToEntityMapper.toModelList(messageDAO.getMessagesBySenderAndReciever(sender.getId(), reciever.getId()));
     }
 
@@ -73,7 +73,7 @@ public class MessageService implements IMessageService {
 
         messageDAO.save(messageEntity);
 
-        logger.info("Сообщение успешно отправлено.");
+        logger.info("Сообщение от пользователя {} пользователю {} успешно отправлено.", model.getSender().getLogin(), model.getReciever().getLogin());
         return messageModelToEntityMapper.toModel(messageEntity);
     }
 }

@@ -87,7 +87,7 @@ public class AdvertisementService implements IAdvertisementService {
 
         List<AdvertisementEntity> advertisementEntities = advertisementDAO.findAdvertisementsByUserId(userEntity.getId());
 
-        logger.info("История успешно получена.");
+        logger.info("История продаж пользователя {} успешно получена.", login);
         return advertisementModelToEntityMapper
                 .toModelList(advertisementEntities.stream().filter(AdvertisementEntity::isClosed).toList());
     }
@@ -128,7 +128,7 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementEntity.setPublished(instant);
         advertisementEntity.setUser(userEntity);
 
-        logger.info("Объявление успешно добавлено.");
+        logger.info("Объявление пользователя {} успешно добавлено.", advertisement.getUser().getLogin());
         return advertisementModelToEntityMapper.toModel(advertisementDAO.save(advertisementEntity));
     }
 
@@ -187,7 +187,7 @@ public class AdvertisementService implements IAdvertisementService {
 
         advertisementDAO.update(advertisementEntity);
 
-        logger.info("Объявление успешно отредактировано.");
+        logger.info("Объявление с номером {} успешно отредактировано.", advertisementEntity.getId());
         return advertisementModelToEntityMapper.toModel(advertisementEntity);
     }
 
@@ -202,7 +202,7 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementEntity.setPaid(true);
         advertisementDAO.update(advertisementEntity);
 
-        logger.info("Объявление успешно проплачено.");
+        logger.info("Объявление с номером {} успешно проплачено.", adNumber);
     }
 
     @Override
@@ -229,7 +229,7 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementEntity.setClosed(true);
         advertisementDAO.update(advertisementEntity);
 
-        logger.info("Объяаление успешно закрыто.");
+        logger.info("Объявление с номером {} успешно закрыто.", adNumber);
     }
 
     @Override
@@ -243,6 +243,6 @@ public class AdvertisementService implements IAdvertisementService {
         advertisementDAO.delete(advertisementEntity);
         fileManager.deleteOldPreview(advertisementEntity.getPreviewLink());
 
-        logger.info("Объявление успешно удалено.");
+        logger.info("Объявление с номером {} успешно удалено.", adNumber);
     }
 }

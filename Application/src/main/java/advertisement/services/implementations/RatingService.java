@@ -38,7 +38,7 @@ public class RatingService implements IRatingService {
             throw new UserNotFoundException("Продавца с логином " + login + " не существует.");
         });
 
-        logger.info("Оценки успешно получены.");
+        logger.info("Оценки продавца {} успешно получены.", login);
         return ratingModelToEntityMapper.toModelList(ratingDAO.getSellerRatings(seller.getId()));
     }
 
@@ -71,7 +71,7 @@ public class RatingService implements IRatingService {
         double score = ratingDAO.getSellerRating(seller.getId());
         ratingEntity.getSeller().setSellerRating(score);
 
-        logger.info("Оценка успешно добавлена.");
+        logger.info("Оценка продавцу {} успешно добавлена.", rating.getSeller().getLogin());
         return ratingModelToEntityMapper.toModel(ratingEntity);
     }
 }

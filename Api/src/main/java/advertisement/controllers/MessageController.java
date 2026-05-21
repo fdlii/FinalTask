@@ -38,7 +38,7 @@ public class MessageController {
             @Email(message = "Некорректный формат логина.")
             @PathVariable("reciever") String recieverLogin
     ){
-        logger.info("Получение сообщений чата.");
+        logger.info("Получение сообщений чата пользователя {}.", senderLogin);
         List<MessageResponseDTO> response = messageDTOToModelMapper
                 .toDTOList(messageService
                         .getChatMessages(senderLogin, recieverLogin));
@@ -48,7 +48,7 @@ public class MessageController {
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<MessageResponseDTO> sendMessage(@Valid @RequestBody MessageRequestDTO messageRequestDTO) {
-        logger.info("Отправка сообщения.");
+        logger.info("Отправка сообщения от пользователя {} пользователю {}.", messageRequestDTO.getSenderLogin(), messageRequestDTO.getRecieverLogin());
         MessageResponseDTO response = messageDTOToModelMapper
                 .toDTO(messageService
                         .sendMessage(messageDTOToModelMapper

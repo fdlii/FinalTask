@@ -27,7 +27,7 @@ public class CategoryController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<CategoryResponseDTO> addCategory(@Valid @RequestBody CategoryRequestDTO categoryRequestDTO) {
-        logger.info("Добавление категории.");
+        logger.info("Добавление категории {}.", categoryRequestDTO.getName());
         CategoryResponseDTO response = categoryDTOToModelMapper
                 .toDTO(categoryService
                         .addCategory(categoryDTOToModelMapper

@@ -91,7 +91,7 @@ public class UserService implements IUserService {
 
         userDAO.save(userMapper.toEntity(user), addedRoles);
 
-        logger.info("Регистрация успешна.");
+        logger.info("Регистрация пользователя {} успешна.", user.getLogin());
         return user;
     }
 
@@ -113,7 +113,7 @@ public class UserService implements IUserService {
 
         if (authentication.isAuthenticated()) {
             UserPrincipal userPrincipal = new UserPrincipal(userDAO.findByLogin(login).get());
-            logger.info("Пользователь успешно вошёл.");
+            logger.info("Пользователь {} успешно вошёл.", login);
             return jwtHandler.generateToken(login, userPrincipal.getAuthorities());
         }
         return null;
@@ -130,7 +130,7 @@ public class UserService implements IUserService {
         userEntity.setPassword(passwordEncoder.encode(password));
         userDAO.update(userEntity);
 
-        logger.info("Пароль успешно изменён.");
+        logger.info("Пароль пользователя {} успешно изменён.", login);
     }
 
     @Override
@@ -154,7 +154,7 @@ public class UserService implements IUserService {
 
         user.setAvatarLink(newAvatarLink);
 
-        logger.info("Профиль успешно отредактирован.");
+        logger.info("Профиль пользователя {} успешно отредактирован.", user.getLogin());
         return user;
     }
 }
